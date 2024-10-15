@@ -1,0 +1,35 @@
+import os
+from pydub import AudioSegment
+from pydub.utils import which
+
+# 设置 ffmpeg 路径（如果 pydub 找不到 ffmpeg）
+AudioSegment.converter = which("ffmpeg")
+AudioSegment.ffprobe = which("ffprobe")
+
+def convert_mp3_to_wav(input_folder, output_folder):
+    # 检查输出文件夹是否存在，不存在则创建
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+
+    # 遍历输入文件夹中的所有文件
+    for filename in os.listdir(input_folder):
+        if filename.endswith(".mp3"):
+            mp3_path = os.path.join(input_folder, filename)
+            wav_filename = os.path.splitext(filename)[0] + ".wav"
+            wav_path = os.path.join(output_folder, wav_filename)
+
+            try:
+                # 加载 MP3 文件
+                audio = AudioSegment.from_mp3(mp3_path)
+
+                # 导出为 WAV 文件
+                audio.export(wav_path, format="wav")
+                print(f"Converted {filename} to {wav_filename}")
+            except Exception as e:
+                print(f"Error converting {filename}: {e}")
+
+# 使用示例
+input_folder = "path/to/your/mp3/folder"  # 替换为你的MP3文件夹路径
+output_folder = "path/to/your/wav/folder"  # 替换为你想保存WAV文件的文件夹路径
+
+convert_mp3_to_wav(input_folder, output_folder)
